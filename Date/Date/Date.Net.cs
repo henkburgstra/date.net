@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Date.Net
 {
@@ -11,6 +12,7 @@ namespace Date.Net
         INVALID, DAILY, WEEKLY, TWO_WEEKLY, THREE_WEEKLY, FOUR_WEEKLY, MONTHLY,
         FIRST_OF_MONTH, SECOND_OF_MONTH, THIRD_OF_MONTH, FOURTH_OF_MONTH, QUARTERLY, YEARLY
     }
+
 
     public class DateRepeater
     {
@@ -122,6 +124,7 @@ namespace Date.Net
 
     public static class DateExtensions
     {
+        public static Regex reYyyymmdd = new Regex(@"(\d{4})([-/])(\d{2})([-/])(\d{2})$");
         public static string Description(this Interval interval)
         {
             switch (interval)
@@ -163,6 +166,19 @@ namespace Date.Net
         public static DateTime AddQuarters(this DateTime date, int quarters)
         {
             return date.AddMonths(3 * quarters);
+        }
+        public static DateTime FromYyyymmdd(this DateTime date, string yyyymmdd)
+        {
+            Match match = reYyyymmdd.Match(yyyymmdd);
+            if (match.Success)
+            {
+                return new DateTime(
+                    Int32.Parse(match.Groups[1].Value), 
+                    Int32.Parse(match.Groups[3].Value), 
+                    Int32.Parse(match.Groups[5].Value)
+                );
+            }
+            return date;
         }
         public static Age Age(this DateTime date, DateTime referenceDate = default(DateTime))
         {

@@ -14,5 +14,18 @@ namespace Date.Net.Tests
             Assert.AreEqual(age.Years, 50);
             Assert.AreEqual(age.Months, 7);
         }
+
+        [TestMethod()]
+        public void FromYyyymmddTest()
+        {
+            DateTime date = new DateTime().FromYyyymmdd("1965-08-22");
+            Assert.AreEqual(date.Year, 1965);
+            Assert.AreEqual(date.Month, 8);
+            Assert.AreEqual(date.Day, 22);
+            date = date.FromYyyymmdd("2005/12/18");
+            Assert.AreEqual(date.Year, 2005);
+            Assert.AreEqual(date.Month, 12);
+            Assert.AreEqual(date.Day, 18);
+        }
     }
 }
