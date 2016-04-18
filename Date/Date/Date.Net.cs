@@ -12,13 +12,13 @@ namespace Date.Net
         FIRST_OF_MONTH, SECOND_OF_MONTH, THIRD_OF_MONTH, FOURTH_OF_MONTH, QUARTERLY, YEARLY
     }
 
-    public class DatePattern
+    public class DateRepeater
     {
         public Interval Interval;
         public DateTime Begin;
         public DateTime End;
 
-        public DatePattern(Interval interval, DateTime begin=default(DateTime), DateTime end=default(DateTime))
+        public DateRepeater(Interval interval, DateTime begin=default(DateTime), DateTime end=default(DateTime))
         {
             this.Interval = interval;
 
@@ -30,14 +30,87 @@ namespace Date.Net
             {
                 Begin = begin;
             }
+            End = end;
+        }
+
+        public IEnumerable<DateTime> Repeat()
+        {
+            DateTime date = new DateTime(Begin.Year, Begin.Month, Begin.Day);
+            DateTime end = new DateTime(End.Year, End.Month, End.Day);
             if (end.Year == 1)
             {
-                End = DateTime.Today;
+                end = date.AddYears(10);
             }
-            else
+            while (date <= end)
             {
-                End = end;
+                yield return date;
+                switch (this.Interval)
+                {
+                    case Interval.WEEKLY:
+                        date = date.AddWeeks(1);
+                        break;
+                    case Interval.TWO_WEEKLY:
+                        date = date.AddWeeks(2);
+                        break;
+                    case Interval.THREE_WEEKLY:
+                        date = date.AddWeeks(3);
+                        break;
+                    case Interval.FOUR_WEEKLY:
+                        date = date.AddWeeks(4);
+                        break;
+                    case Interval.DAILY:
+                    default:
+                        date = date.AddDays(1);
+                        break;
+                }
             }
+        }
+
+        public bool Contains(DateTime date)
+        {
+
+            switch (this.Interval)
+            {
+                case Interval.DAILY:
+                    return DayIntervalContains(date);
+                case Interval.WEEKLY:
+                    return WeekIntervalContains(date, 1);
+                case Interval.TWO_WEEKLY:
+                    return WeekIntervalContains(date, 2);
+                case Interval.THREE_WEEKLY:
+                    return WeekIntervalContains(date, 3);
+                case Interval.FOUR_WEEKLY:
+                    return WeekIntervalContains(date, 4);
+            }
+
+            return false;
+        }
+
+        public bool DayIntervalContains(DateTime date)
+        {
+            return date >= Begin && (End.Year == 1 || date <= End);
+        }
+
+        public bool WeekIntervalContains(DateTime date, int weeks)
+        {
+            if (End.Year != 1 && End == date)
+            {
+                return true;
+            }
+            if (Begin > date || End.Year != 1 && End < date)
+            {
+                return false;
+            }
+            var compare = new DateTime(date.Year, date.Month, date.Day);
+            while (compare <= date)
+            {
+                if (compare == date)
+                {
+                    return true;
+                }
+                compare = compare.AddWeeks(weeks);
+            }
+            return false;
         }
     }
 
