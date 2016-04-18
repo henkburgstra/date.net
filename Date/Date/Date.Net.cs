@@ -5,6 +5,42 @@ using System.Text;
 
 namespace Date.Net
 {
+
+    public enum Interval
+    {
+        INVALID, DAILY, WEEKLY, TWO_WEEKLY, THREE_WEEKLY, FOUR_WEEKLY, MONTHLY,
+        FIRST_OF_MONTH, SECOND_OF_MONTH, THIRD_OF_MONTH, FOURTH_OF_MONTH, QUARTERLY, YEARLY
+    }
+
+    public class DatePattern
+    {
+        public Interval Interval;
+        public DateTime Begin;
+        public DateTime End;
+
+        public DatePattern(Interval interval, DateTime begin=default(DateTime), DateTime end=default(DateTime))
+        {
+            this.Interval = interval;
+
+            if (begin.Year == 1)
+            {
+                Begin = DateTime.Today;
+            }
+            else
+            {
+                Begin = begin;
+            }
+            if (end.Year == 1)
+            {
+                End = DateTime.Today;
+            }
+            else
+            {
+                End = end;
+            }
+        }
+    }
+
     public struct Age
     {
         public int Years;
@@ -13,6 +49,39 @@ namespace Date.Net
 
     public static class DateExtensions
     {
+        public static string Description(this Interval interval)
+        {
+            switch (interval)
+            {
+                case Interval.DAILY:
+                    return "every day";
+                case Interval.WEEKLY:
+                    return "every week";
+                case Interval.TWO_WEEKLY:
+                    return "every two weeks";
+                case Interval.THREE_WEEKLY:
+                    return "every three weeks";
+                case Interval.FOUR_WEEKLY:
+                    return "every four weeks";
+                case Interval.MONTHLY:
+                    return "every month";
+                case Interval.FIRST_OF_MONTH:;
+                    return "every first mon, tue, ... of the month";
+                case Interval.SECOND_OF_MONTH:
+                    return "every second mon, tue, ... of the month";
+                case Interval.THIRD_OF_MONTH:
+                    return "every third mon, tue, ... of the month";
+                case Interval.FOURTH_OF_MONTH:
+                    return "every fourth mon, tue, ... of the month";
+                case Interval.QUARTERLY:
+                    return "every quarter";
+                case Interval.YEARLY:
+                    return "every year";
+                case Interval.INVALID:
+                default:
+                    return "Invalid interval";
+            }
+        }
 
         public static DateTime AddWeeks(this DateTime date, int weeks)
         {
@@ -40,4 +109,5 @@ namespace Date.Net
         }
 
     }
+
 }
